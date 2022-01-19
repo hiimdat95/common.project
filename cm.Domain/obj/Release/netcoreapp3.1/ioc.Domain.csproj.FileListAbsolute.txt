@@ -1,0 +1,10 @@
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Domain\bin\Release\netcoreapp3.1\ioc.Domain.deps.json
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Domain\bin\Release\netcoreapp3.1\ioc.Domain.dll
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Domain\bin\Release\netcoreapp3.1\ioc.Domain.pdb
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Domain\obj\Release\netcoreapp3.1\ioc.Domain.csproj.AssemblyReference.cache
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Domain\obj\Release\netcoreapp3.1\ioc.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Domain\obj\Release\netcoreapp3.1\ioc.Domain.AssemblyInfoInputs.cache
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Domain\obj\Release\netcoreapp3.1\ioc.Domain.AssemblyInfo.cs
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Domain\obj\Release\netcoreapp3.1\ioc.Domain.csproj.CoreCompileInputs.cache
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Domain\obj\Release\netcoreapp3.1\ioc.Domain.dll
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Domain\obj\Release\netcoreapp3.1\ioc.Domain.pdb

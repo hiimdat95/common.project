@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<AssemblyName>cm.Utilities</AssemblyName>
+		<RootNamespace>cm.Utilities</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Cache\CacheModel\**" />
+	  <Compile Remove="Cache\CacheService\**" />
+	  <Compile Remove="Cache\ICacheService\**" />
+	  <EmbeddedResource Remove="Cache\CacheModel\**" />
+	  <EmbeddedResource Remove="Cache\CacheService\**" />
+	  <EmbeddedResource Remove="Cache\ICacheService\**" />
+	  <None Remove="Cache\CacheModel\**" />
+	  <None Remove="Cache\CacheService\**" />
+	  <None Remove="Cache\ICacheService\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="10.1.1" />
+		<PackageReference Include="MailKit" Version="2.15.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="5.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
+		<PackageReference Include="MimeKit" Version="2.15.1" />
+		<PackageReference Include="StackExchange.Redis" Version="2.2.62" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="Augustine.VietnameseCalendar.Core">
+			<HintPath>libs\Augustine.VietnameseCalendar.Core.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Enums\" />
+	</ItemGroup>
+</Project>

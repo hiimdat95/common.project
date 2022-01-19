@@ -1,0 +1,13 @@
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Utilities\bin\Release\netcoreapp3.1\ioc.Utilities.deps.json
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Utilities\bin\Release\netcoreapp3.1\ioc.Utilities.dll
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Utilities\bin\Release\netcoreapp3.1\ioc.Utilities.pdb
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Utilities\bin\Release\netcoreapp3.1\Augustine.VietnameseCalendar.Core.dll
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Utilities\bin\Release\netcoreapp3.1\Augustine.VietnameseCalendar.Core.dll.config
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Utilities\obj\Release\netcoreapp3.1\ioc.Utilities.csproj.AssemblyReference.cache
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Utilities\obj\Release\netcoreapp3.1\ioc.Utilities.GeneratedMSBuildEditorConfig.editorconfig
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Utilities\obj\Release\netcoreapp3.1\ioc.Utilities.AssemblyInfoInputs.cache
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Utilities\obj\Release\netcoreapp3.1\ioc.Utilities.AssemblyInfo.cs
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Utilities\obj\Release\netcoreapp3.1\ioc.Utilities.csproj.CoreCompileInputs.cache
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Utilities\obj\Release\netcoreapp3.1\ioc.Utilities.csproj.CopyComplete
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Utilities\obj\Release\netcoreapp3.1\ioc.Utilities.dll
+D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.Utilities\obj\Release\netcoreapp3.1\ioc.Utilities.pdb

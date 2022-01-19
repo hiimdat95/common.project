@@ -1,0 +1,3 @@
+is_global = true
+build_property.RootNamespace = ioc.BackendApi
+build_property.ProjectDir = D:\Work\Edsolab\ioc\ioc_backend\cm-api\cm.BackendApi\

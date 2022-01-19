@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>cm.Repository</AssemblyName>
+    <RootNamespace>cm.Repository</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.95.4" />
+    <PackageReference Include="Dapper" Version="2.0.90" />
+    <PackageReference Include="RestSharp" Version="106.12.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\cm.Domain\cm.Domain.csproj" />
+    <ProjectReference Include="..\cm.Infra\cm.Infrastructure.csproj" />
+    <ProjectReference Include="..\cm.ViewModels\cm.ViewModels.csproj" />
+  </ItemGroup>
+</Project>

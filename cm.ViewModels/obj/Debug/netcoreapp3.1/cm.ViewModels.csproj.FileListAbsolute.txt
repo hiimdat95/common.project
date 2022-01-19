@@ -1,0 +1,16 @@
+D:\Work\Mywork\common.project\cm.ViewModels\bin\Debug\netcoreapp3.1\cm.ViewModels.deps.json
+D:\Work\Mywork\common.project\cm.ViewModels\bin\Debug\netcoreapp3.1\cm.ViewModels.dll
+D:\Work\Mywork\common.project\cm.ViewModels\bin\Debug\netcoreapp3.1\cm.ViewModels.pdb
+D:\Work\Mywork\common.project\cm.ViewModels\bin\Debug\netcoreapp3.1\cm.Domain.dll
+D:\Work\Mywork\common.project\cm.ViewModels\bin\Debug\netcoreapp3.1\cm.Utilities.dll
+D:\Work\Mywork\common.project\cm.ViewModels\bin\Debug\netcoreapp3.1\Augustine.VietnameseCalendar.Core.dll
+D:\Work\Mywork\common.project\cm.ViewModels\bin\Debug\netcoreapp3.1\cm.Domain.pdb
+D:\Work\Mywork\common.project\cm.ViewModels\bin\Debug\netcoreapp3.1\cm.Utilities.pdb
+D:\Work\Mywork\common.project\cm.ViewModels\bin\Debug\netcoreapp3.1\Augustine.VietnameseCalendar.Core.dll.config
+D:\Work\Mywork\common.project\cm.ViewModels\obj\Debug\netcoreapp3.1\cm.ViewModels.csprojAssemblyReference.cache
+D:\Work\Mywork\common.project\cm.ViewModels\obj\Debug\netcoreapp3.1\cm.ViewModels.AssemblyInfoInputs.cache
+D:\Work\Mywork\common.project\cm.ViewModels\obj\Debug\netcoreapp3.1\cm.ViewModels.AssemblyInfo.cs
+D:\Work\Mywork\common.project\cm.ViewModels\obj\Debug\netcoreapp3.1\cm.ViewModels.csproj.CoreCompileInputs.cache
+D:\Work\Mywork\common.project\cm.ViewModels\obj\Debug\netcoreapp3.1\cm.ViewModels.csproj.CopyComplete
+D:\Work\Mywork\common.project\cm.ViewModels\obj\Debug\netcoreapp3.1\cm.ViewModels.dll
+D:\Work\Mywork\common.project\cm.ViewModels\obj\Debug\netcoreapp3.1\cm.ViewModels.pdb
