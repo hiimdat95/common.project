@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Cache.CacheHelper
+namespace cm.Utilities.Cache.CacheHelper
 {
     public class RedisClient : IRedisClient
     {
@@ -140,7 +140,6 @@ namespace Cache.CacheHelper
             {
                 var db = GetDBInstance();
                 return db.StringSet(key, value);
-
             }
             catch (Exception ex)
             {
@@ -186,8 +185,8 @@ namespace Cache.CacheHelper
             {
                 var stringId = NameOf(typeof(T).Name, key);
                 var valueJson = JsonConvert.SerializeObject(document);
-                    var db = GetDBInstance();
-                    return db.StringSet(stringId, valueJson, new TimeSpan(expiresAt.Ticks));
+                var db = GetDBInstance();
+                return db.StringSet(stringId, valueJson, new TimeSpan(expiresAt.Ticks));
             }
             catch (Exception ex)
             {
@@ -202,8 +201,8 @@ namespace Cache.CacheHelper
             {
                 var stringId = NameOf(typeof(T).Name, key);
                 var valueJson = JsonConvert.SerializeObject(documents);
-                    var db = GetDBInstance();
-                    return db.StringSet(stringId, valueJson);
+                var db = GetDBInstance();
+                return db.StringSet(stringId, valueJson);
             }
             catch
             {
@@ -220,7 +219,6 @@ namespace Cache.CacheHelper
 
                 var db = GetDBInstance();
                 return db.StringSet(stringId, valueJson, TimeSpan.FromSeconds(expiresTime));
-
             }
             catch (Exception ex)
             {
@@ -235,8 +233,8 @@ namespace Cache.CacheHelper
             {
                 var valueJson = JsonConvert.SerializeObject(document);
 
-                    var db = GetDBInstance();
-                    return db.HashSet(hashId, key, valueJson);
+                var db = GetDBInstance();
+                return db.HashSet(hashId, key, valueJson);
             }
             catch (Exception ex)
             {
@@ -259,10 +257,10 @@ namespace Cache.CacheHelper
 
                 var meta = new List<HashEntry>();
                 meta.AddRange(data.Select(s => new HashEntry(s.Key, JsonConvert.SerializeObject(s.Value))).ToList());
-                
-                    var db = GetDBInstance();
-                    db.HashSet(hashId, meta.ToArray());
-                
+
+                var db = GetDBInstance();
+                db.HashSet(hashId, meta.ToArray());
+
                 return true;
             }
             catch (Exception ex)
@@ -288,8 +286,8 @@ namespace Cache.CacheHelper
         {
             try
             {
-                    var db = GetDBInstance();
-                    return db.HashSet(hashName, key, value);
+                var db = GetDBInstance();
+                return db.HashSet(hashName, key, value);
             }
             catch (Exception ex)
             {
@@ -304,10 +302,10 @@ namespace Cache.CacheHelper
             {
                 var meta = new List<HashEntry>();
                 meta.AddRange(data.Select(s => new HashEntry(s.Key, s.Value)).ToList());
-                
-                    var db = GetDBInstance();
-                    db.HashSet(NameOf(hashName), meta.ToArray());
-                
+
+                var db = GetDBInstance();
+                db.HashSet(NameOf(hashName), meta.ToArray());
+
                 return true;
             }
             catch (Exception ex)
@@ -323,10 +321,10 @@ namespace Cache.CacheHelper
             {
                 var meta = new List<HashEntry>();
                 meta.AddRange(data.Select(s => new HashEntry(s.Key, JsonConvert.SerializeObject(s.Value))).ToList());
-                
-                    var db = GetDBInstance();
-                    db.HashSet(NameOf(hashName), meta.ToArray());
-                
+
+                var db = GetDBInstance();
+                db.HashSet(NameOf(hashName), meta.ToArray());
+
                 return true;
             }
             catch (Exception ex)
@@ -340,8 +338,8 @@ namespace Cache.CacheHelper
         {
             try
             {
-                    var db = GetDBInstance();
-                    return db.KeyExpire(key, expireTime);
+                var db = GetDBInstance();
+                return db.KeyExpire(key, expireTime);
             }
             catch (Exception ex)
             {
@@ -354,8 +352,8 @@ namespace Cache.CacheHelper
         {
             try
             {
-                    var db = GetDBInstance();
-                    return db.SortedSetAdd(key, value, score);
+                var db = GetDBInstance();
+                return db.SortedSetAdd(key, value, score);
             }
             catch (Exception ex)
             {
@@ -379,8 +377,8 @@ namespace Cache.CacheHelper
             try
             {
                 var stringId = NameOf(typeof(T).Name, key);
-                    var db = GetDBInstance();
-                    return JsonConvert.DeserializeObject<T>(db.StringGet(stringId));
+                var db = GetDBInstance();
+                return JsonConvert.DeserializeObject<T>(db.StringGet(stringId));
             }
             catch (Exception ex)
             {
@@ -396,12 +394,11 @@ namespace Cache.CacheHelper
             {
                 var stringId = NameOf(typeof(T).Name, key);
 
-                
-                    var db = GetDBInstance();
-                    var res = db.StringGet(stringId);
-                    if (res.HasValue)
-                        results = JsonConvert.DeserializeObject<List<T>>(res);
-                
+                var db = GetDBInstance();
+                var res = db.StringGet(stringId);
+                if (res.HasValue)
+                    results = JsonConvert.DeserializeObject<List<T>>(res);
+
                 return results;
             }
             catch (Exception ex)
@@ -415,12 +412,12 @@ namespace Cache.CacheHelper
         {
             try
             {
-                    var db = GetDBInstance();
-                    var valueReply = db.HashGet(hashId, key);
-                    if (valueReply.HasValue)
-                    {
-                        return JsonConvert.DeserializeObject<T>(valueReply);
-                    }
+                var db = GetDBInstance();
+                var valueReply = db.HashGet(hashId, key);
+                if (valueReply.HasValue)
+                {
+                    return JsonConvert.DeserializeObject<T>(valueReply);
+                }
                 return null;
             }
             catch (Exception ex)
@@ -446,12 +443,12 @@ namespace Cache.CacheHelper
         {
             try
             {
-                    var db = GetDBInstance();
-                    var valueReply = await db.HashGetAsync(hashId, key);
-                    if (valueReply.HasValue)
-                    {
-                        return JsonConvert.DeserializeObject<T>(valueReply);
-                    }
+                var db = GetDBInstance();
+                var valueReply = await db.HashGetAsync(hashId, key);
+                if (valueReply.HasValue)
+                {
+                    return JsonConvert.DeserializeObject<T>(valueReply);
+                }
                 return null;
             }
             catch (Exception ex)
@@ -465,8 +462,8 @@ namespace Cache.CacheHelper
         {
             try
             {
-                    var db = GetDBInstance();
-                    return db.SortedSetScore(key, value);
+                var db = GetDBInstance();
+                return db.SortedSetScore(key, value);
             }
             catch (Exception ex)
             {
@@ -488,14 +485,13 @@ namespace Cache.CacheHelper
             {
                 var valueReplies = new List<string>();
 
-                
-                    var db = GetDBInstance();
-                    foreach (var item in keys)
-                    {
-                        var val = db.HashGet(hashId, item).ToString();
-                        valueReplies.Add(val);
-                    }
-                
+                var db = GetDBInstance();
+                foreach (var item in keys)
+                {
+                    var val = db.HashGet(hashId, item).ToString();
+                    valueReplies.Add(val);
+                }
+
                 foreach (var item in valueReplies)
                 {
                     results.AddRange(JsonConvert.DeserializeObject<List<T>>(item));
@@ -533,10 +529,9 @@ namespace Cache.CacheHelper
             {
                 List<HashEntry> valueReplies;
 
-                
-                    var db = GetDBInstance();
-                    valueReplies = db.HashGetAll(hashId).ToList();
-                
+                var db = GetDBInstance();
+                valueReplies = db.HashGetAll(hashId).ToList();
+
                 if (null != valueReplies)
                 {
                     results.AddRange(valueReplies.Select(s => JsonConvert.DeserializeObject<T>(s.Value)).ToList());
@@ -563,10 +558,9 @@ namespace Cache.CacheHelper
             {
                 List<RedisValue> valueReplies;
 
-                
-                    var db = GetDBInstance();
-                    valueReplies = db.HashGet(hashId, keys.ToArray()).ToList();
-                
+                var db = GetDBInstance();
+                valueReplies = db.HashGet(hashId, keys.ToArray()).ToList();
+
                 results.AddRange(valueReplies.Where(w => w.HasValue).Select(s => JsonConvert.DeserializeObject<T>(s)).ToList());
             }
             catch (Exception ex)
@@ -601,10 +595,9 @@ namespace Cache.CacheHelper
             {
                 List<HashEntry> valueReplies;
 
-                
-                    var db = GetDBInstance();
-                    valueReplies = db.HashGetAll(hashId).ToList();
-                
+                var db = GetDBInstance();
+                valueReplies = db.HashGetAll(hashId).ToList();
+
                 if (null != valueReplies)
                 {
                     results.AddRange(valueReplies.Select(s => JsonConvert.DeserializeObject<T>(s.Value)).ToList());
@@ -623,11 +616,9 @@ namespace Cache.CacheHelper
             var valueReply = string.Empty;
             try
             {
-                
-                    var db = GetDBInstance();
-                    valueReply = db.HashGet(hashId, key);
-                    return valueReply;
-                
+                var db = GetDBInstance();
+                valueReply = db.HashGet(hashId, key);
+                return valueReply;
             }
             catch (Exception ex)
             {
@@ -643,9 +634,9 @@ namespace Cache.CacheHelper
         public bool Remove(string key)
         {
             try
-            { 
-                    var db = GetDBInstance();
-                    return db.KeyDelete(key);
+            {
+                var db = GetDBInstance();
+                return db.KeyDelete(key);
             }
             catch (Exception ex)
             {
@@ -659,8 +650,8 @@ namespace Cache.CacheHelper
             try
             {
                 var stringId = NameOf(typeof(T).Name, key);
-                    var db = GetDBInstance();
-                    return db.KeyDelete(stringId);
+                var db = GetDBInstance();
+                return db.KeyDelete(stringId);
             }
             catch (Exception ex)
             {
@@ -673,8 +664,8 @@ namespace Cache.CacheHelper
         {
             try
             {
-                    var db = GetDBInstance();
-                    return db.HashDelete(hashId, key);
+                var db = GetDBInstance();
+                return db.HashDelete(hashId, key);
             }
             catch (Exception ex)
             {
@@ -694,12 +685,12 @@ namespace Cache.CacheHelper
             try
             {
                 var hashId = typeof(T).Name;
-                    var db = GetDBInstance();
+                var db = GetDBInstance();
 
-                    var valueReplies = new List<RedisValue>();
-                    valueReplies.AddRange(keys.Select(s => (RedisValue)s));
+                var valueReplies = new List<RedisValue>();
+                valueReplies.AddRange(keys.Select(s => (RedisValue)s));
 
-                    return db.HashDelete(hashId, valueReplies.ToArray()) > 0;
+                return db.HashDelete(hashId, valueReplies.ToArray()) > 0;
             }
             catch (Exception ex)
             {
@@ -712,8 +703,8 @@ namespace Cache.CacheHelper
         {
             try
             {
-                    var db = GetDBInstance();
-                    return db.SortedSetRemove(key, value);
+                var db = GetDBInstance();
+                return db.SortedSetRemove(key, value);
             }
             catch (Exception ex)
             {
@@ -732,8 +723,8 @@ namespace Cache.CacheHelper
         {
             try
             {
-                    var db = GetDBInstance();
-                    return db.SortedSetRemoveRangeByScore(key, score, score) > 0;
+                var db = GetDBInstance();
+                return db.SortedSetRemoveRangeByScore(key, score, score) > 0;
             }
             catch (Exception ex)
             {
@@ -747,6 +738,7 @@ namespace Cache.CacheHelper
             var setId = typeof(T).Name;
             return RemoveScoreFromSortedSet(setId, score);
         }
+
         #endregion Remove
     }
 }

@@ -38,7 +38,7 @@
             public static string APIKEY_PARAM_TTS { get; set; }
             public static string APIKEY_VALUE_TTS { get; set; }
 
-            public static string UPLOAD_FOLDER { get; set; }
+            public static string UPLOAD_FOLDER { get; set; } = "AppSettings:UPLOAD_FOLDER";
 
             public static string UPLOAD_FOLDER_FAQS { get; set; }
         }
@@ -76,7 +76,7 @@
             public const string TinhHinhHoSoTheoSoNganh = "HoSoTheoCoSoNganh";
             public const string TinhHinhHoSoTheoDonVi = "HoSoTheoDonVi";
         }
-        
+
         public static class LoaiYkndThongKe
         {
             public const string TinhHinhXuLyTrangChu = "TinhHinhXuLyTrangChu";

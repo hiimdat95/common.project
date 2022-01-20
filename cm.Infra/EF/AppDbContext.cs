@@ -1,11 +1,14 @@
-﻿using cm.Domain.Entities;
+﻿using cm.Domain.Configurations;
+using cm.Domain.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 #nullable disable
 
 namespace cm.Infrastructure.EF
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
@@ -14,8 +17,10 @@ namespace cm.Infrastructure.EF
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
-         
+            //Configure using Fluent API
+            modelBuilder.ApplyConfiguration(new AppUserConfiguration());
+
+            modelBuilder.ApplyConfiguration(new AppRoleConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Cache.CacheHelper
+namespace cm.Utilities.Cache.CacheHelper
 {
     public interface IRedisClient
     {

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Cache.CacheHelper
+namespace cm.Utilities.Cache.CacheHelper
 {
     public class BaseRedisHelper
     {
@@ -19,13 +19,14 @@ namespace Cache.CacheHelper
 
         public BaseRedisHelper()
         {
-            var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             var builder = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json")
-            .AddJsonFile($"appsettings.{environmentName}.json", optional: true)
             .AddEnvironmentVariables();
             var Configuration = builder.Build();
-            _connectionString = Configuration.GetSection("Redis:ConnectionString").Value;
+            //_connectionString = Configuration.GetSection("Redis:ConnectionString").Value;
+            var redisCacheSettings = new RedisCacheSettings();
+            Configuration.GetSection(nameof(RedisCacheSettings)).Bind(redisCacheSettings);
+            services.AddSingleton(redisCacheSettings);
         }
 
         private IDatabase GetDBInstance()
@@ -161,7 +162,6 @@ namespace Cache.CacheHelper
                 existData.Add(document);
                 var valueJson = JsonConvert.SerializeObject(existData);
 
-
                 returnValue = db.HashSet(hashid, key, valueJson);
 
                 return returnValue;
@@ -189,7 +189,6 @@ namespace Cache.CacheHelper
                 if (existData == null) existData = new List<T>();
                 existData.Add(document);
                 var valueJson = JsonConvert.SerializeObject(existData);
-
 
                 returnValue = await db.HashSetAsync(hashid, key, valueJson);
 
