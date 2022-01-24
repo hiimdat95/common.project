@@ -25,8 +25,8 @@ namespace cm.Utilities.Cache.CacheHelper
             var Configuration = builder.Build();
             //_connectionString = Configuration.GetSection("Redis:ConnectionString").Value;
             var redisCacheSettings = new RedisCacheSettings();
-            Configuration.GetSection(nameof(RedisCacheSettings)).Bind(redisCacheSettings);
-            services.AddSingleton(redisCacheSettings);
+            //Configuration.GetSection(nameof(RedisCacheSettings)).Bind(redisCacheSettings);
+            //services.AddSingleton(redisCacheSettings);
         }
 
         private IDatabase GetDBInstance()

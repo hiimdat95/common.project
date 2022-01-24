@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace cm.Domain.Configurations
 {
-    public class AppUserConfiguration : IEntityTypeConfiguration<AppUser>
+    public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
     {
-        public void Configure(EntityTypeBuilder<AppUser> builder)
+        public void Configure(EntityTypeBuilder<RefreshToken> builder)
         {
-            builder.ToTable("AppUsers");
+            builder.ToTable("RefreshTokens");
             builder.Property(x => x.Id).HasDefaultValueSql("NEWID()");
         }
     }

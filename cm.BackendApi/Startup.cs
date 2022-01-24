@@ -1,4 +1,5 @@
-using Cache.CacheHelper;
+using cm.Domain.Entities;
+using cm.Infrastructure;
 using cm.Infrastructure.EF;
 using cm.Ioc;
 using cm.Utilities.Constants;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -35,8 +37,20 @@ namespace ioc.BackendApi
         {
             services.AddCors();
             services.AddMemoryCache();
-            services.AddDbContext<AppDbContext>(options =>
-              options.UseSqlServer(Configuration.GetConnectionString(SystemConstants.MainConnectionString)));
+
+            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString(SystemConstants.MainConnectionString)));
+            services.AddIdentity<AppUser, AppRole>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 4;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+            })
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders()
+                .AddUserManager<UserManager<AppUser>>()
+                .AddRoleManager<RoleManager<AppRole>>();
 
             var key = Configuration.GetSection("JwtOptions:Secret").Value;
             services.AddSwaggerGen(c =>
@@ -114,11 +128,11 @@ namespace ioc.BackendApi
                         .AllowAnyMethod();
                 });
             });
-
+            services.AddTransient<QueryMigrationInitilize>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddControllers();
 
-            services.AddTransient<IRedisClient, RedisClient>();
+            //services.AddTransient<IRedisClient, RedisClient>();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.RegisterServices();
         }

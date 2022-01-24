@@ -9,7 +9,7 @@ namespace cm.Domain.Configurations
         public void Configure(EntityTypeBuilder<AppRole> builder)
         {
             builder.ToTable("AppRoles");
-
+            builder.Property(x => x.Id).HasDefaultValueSql("NEWID()");
             builder.Property(x => x.DisplayName).HasColumnType("nvarchar").HasMaxLength(200).IsRequired();
             builder.Property(x => x.Description).HasColumnType("nvarchar").HasMaxLength(200).IsRequired();
         }

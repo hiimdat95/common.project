@@ -17,11 +17,21 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Remove="Queries\20220101001.sql" />
+		<None Remove="Queries\20220124001.sql" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Queries\20220124001.sql" />
+		<EmbeddedResource Include="Queries\20220101001.sql" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.12" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.8" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.8">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Serilog" Version="2.10.0" />
 		<PackageReference Include="Serilog.Extensions.Hosting" Version="4.2.0" />
@@ -32,12 +42,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\cm.Application\cm.Application.csproj" />
-	  <ProjectReference Include="..\cm.Domain\cm.Domain.csproj" />
-	  <ProjectReference Include="..\cm.Infra\cm.Infrastructure.csproj" />
-	  <ProjectReference Include="..\cm.Ioc\cm.IoC.csproj" />
-	  <ProjectReference Include="..\cm.Repository\cm.Repository.csproj" />
-	  <ProjectReference Include="..\cm.Utilities\cm.Utilities.csproj" />
-	  <ProjectReference Include="..\cm.ViewModels\cm.ViewModels.csproj" />
+		<ProjectReference Include="..\cm.Application\cm.Application.csproj" />
+		<ProjectReference Include="..\cm.Domain\cm.Domain.csproj" />
+		<ProjectReference Include="..\cm.Infra\cm.Infrastructure.csproj" />
+		<ProjectReference Include="..\cm.Ioc\cm.IoC.csproj" />
+		<ProjectReference Include="..\cm.Repository\cm.Repository.csproj" />
+		<ProjectReference Include="..\cm.Utilities\cm.Utilities.csproj" />
+		<ProjectReference Include="..\cm.ViewModels\cm.ViewModels.csproj" />
 	</ItemGroup>
 </Project>
