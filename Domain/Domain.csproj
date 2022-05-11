@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>Domain</AssemblyName>
+    <RootNamespace>Domain</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="EF\**" />
+    <Compile Remove="EntitiesIoc\**" />
+    <Compile Remove="Repositories\**" />
+    <EmbeddedResource Remove="EF\**" />
+    <EmbeddedResource Remove="EntitiesIoc\**" />
+    <EmbeddedResource Remove="Repositories\**" />
+    <None Remove="EF\**" />
+    <None Remove="EntitiesIoc\**" />
+    <None Remove="Repositories\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.8" />
+  </ItemGroup>
+</Project>

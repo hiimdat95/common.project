@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<UserSecretsId>3401c863-8404-4f04-b912-29f234029663</UserSecretsId>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="logs\**" />
+		<Compile Remove="Services\**" />
+		<Content Remove="logs\**" />
+		<Content Remove="Services\**" />
+		<EmbeddedResource Remove="logs\**" />
+		<EmbeddedResource Remove="Services\**" />
+		<None Remove="logs\**" />
+		<None Remove="Services\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Remove="Queries\20220101001.sql" />
+		<None Remove="Queries\20220124001.sql" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Queries\20220124001.sql" />
+		<EmbeddedResource Include="Queries\20220101001.sql" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.12" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.8" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.8">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Serilog" Version="2.10.0" />
+		<PackageReference Include="Serilog.Extensions.Hosting" Version="4.2.0" />
+		<PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
+		<PackageReference Include="Serilog.Sinks.Console" Version="4.0.0" />
+		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.5" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.2.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Application\Application.csproj" />
+		<ProjectReference Include="..\Domain\Domain.csproj" />
+		<ProjectReference Include="..\Infra\Infrastructure.csproj" />
+		<ProjectReference Include="..\Ioc\IoC.csproj" />
+		<ProjectReference Include="..\Repository\Repository.csproj" />
+		<ProjectReference Include="..\Utilities\Utilities.csproj" />
+		<ProjectReference Include="..\ViewModels\ViewModels.csproj" />
+	</ItemGroup>
+</Project>
