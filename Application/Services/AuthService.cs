@@ -1,12 +1,14 @@
 ﻿using Application.Interfaces;
 using AutoMapper;
 using Domain.Entities;
+using Infrastructure.Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Repository.Interfaces;
 using System;
+using System.Dynamic;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -27,6 +29,7 @@ namespace Application.Services
     {
         private readonly IJwtHandler _jwtHandler;
         private readonly IBaseRepository _repository;
+        private readonly IDapperProvider _dapperProvider;
         private readonly IAuthValidator _authValidator;
         private readonly AuthConfig _authConfig;
         private readonly UserManager<AppUser> _userManager;
@@ -44,6 +47,7 @@ namespace Application.Services
             , IUnitOfWork unitOfWork
             , IConfiguration config
             , IEmailService emailService
+            , IDapperProvider dapperProvider
             , ICurrentPrincipal currentPrincipal
             , IHttpContextAccessor httpContextAccessor) : base(currentPrincipal, httpContextAccessor)
         {
@@ -56,11 +60,33 @@ namespace Application.Services
             _unitOfWork = unitOfWork;
             _config = config;
             _emailService = emailService;
+            _dapperProvider = dapperProvider;
         }
 
         public async Task<ServiceResponse> AuthenticateAsync(AuthRequest request)
         {
-            var x = _httpContextAccessor.HttpContext.Request.Host;
+            var iPageIndex = 1;
+            var iPageSize = 2;
+            object[] param = new object[]
+             {
+                iPageIndex,iPageSize
+             };
+            var x = await _dapperProvider.ExecuteQueryAsync<UserViewModel>(@"    SET NOCOUNT ON;
+	                DECLARE @iPageIndex INT =2;
+	                DECLARE @iPageSize INT =1;
+	                SELECT  ROW_NUMBER() OVER(ORDER BY au.CreatedAt DESC) AS Stt
+                           , au.Id
+		                   , au.UserName
+		                   , au.NormalizedUserName
+		                   , au.Email
+		                   , au.NormalizedEmail
+
+                    INTO #Temp
+                    FROM AppUsers au
+
+                    SELECT * FROM #Temp ORDER BY Stt OFFSET (@iPageIndex - 1) * @iPageSize ROWS FETCH NEXT @iPageSize ROWS ONLY;
+
+                    DROP TABLE #Temp", Utilities.Enum.CommandQueryType.CommandType_Text, param);
             var user = await _repository.FistOrDefaultAsync<AppUser>(u => u.UserName == request.UserName);
             if (user == null)
             {

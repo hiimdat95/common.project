@@ -29,7 +29,7 @@ namespace Ioc
             services.AddTransient<IBaseRepository, BaseRepository>();
             services.AddScoped<ICurrentPrincipal, CurrentPrincipal>();
             services.AddScoped<IUnitOfWork, UnitOfWork<AppDbContext>>();
-            services.AddScoped(typeof(IDapperProvider<>), typeof(DapperProvider<>));
+            services.AddScoped(typeof(IDapperProvider), typeof(DapperProvider));
             services.AddScoped<IJwtHandler, JwtHandler>();
             services.AddScoped<IAuthValidator, AuthValidator>();
             services.AddScoped<IAuthService, AuthService<AppUser>>();

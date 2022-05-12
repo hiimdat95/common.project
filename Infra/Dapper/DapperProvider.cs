@@ -12,13 +12,13 @@ using Utilities.Enum;
 
 namespace Infrastructure.Dapper
 {
-    public interface IDapperProvider<T> where T : class
+    public interface IDapperProvider
     {
-        Task<IEnumerable<T>> ExecuteQueryAsync(string query, CommandQueryType commandQueryType, object[] parameter = null);
+        Task<IEnumerable<T>> ExecuteQueryAsync<T>(string query, CommandQueryType commandQueryType, object[] parameter = null) where T : class;
 
-        Task<IEnumerable<T>> ExecuteStoredProcedureAsync<T>(string query, Dictionary<string, object> parameters = null);
+        Task<IEnumerable<T>> ExecuteStoredProcedureAsync<T>(string query, Dictionary<string, object> parameters = null) where T : class;
 
-        Task<IEnumerable<T>> ExecuteQueryCommandAsync<T>(string query, Dictionary<string, object> parameters = null);
+        Task<IEnumerable<T>> ExecuteQueryCommandAsync<T>(string query, Dictionary<string, object> parameters = null) where T : class;
 
         Task<object> ExecuteScalarAsync(string query, Dictionary<string, object> parameters = null, CommandType commandType = CommandType.Text);
 
@@ -28,10 +28,10 @@ namespace Infrastructure.Dapper
 
         Task ExcuteNonQueryAsync(string query, CommandQueryType commandType, object[] parameter = null);
 
-        Task<(List<int> Outputs, IEnumerable<T> Result)> QueryProcedureOutputAsync(string query, CommandType commandType, object[] parameter = null);
+        Task<(List<int> Outputs, IEnumerable<T> Result)> QueryProcedureOutputAsync<T>(string query, CommandType commandType, object[] parameter = null) where T : class;
     }
 
-    public class DapperProvider<T> : IDapperProvider<T> where T : class
+    public class DapperProvider : IDapperProvider
     {
         private readonly IConfiguration _configuration;
 
@@ -46,7 +46,8 @@ namespace Infrastructure.Dapper
             return connectionString;
         }
 
-        public async Task<IEnumerable<T>> ExecuteQueryAsync(string query, CommandQueryType commandQueryType, object[] parameter = null)
+        public async Task<IEnumerable<T>> ExecuteQueryAsync<T>(string query, CommandQueryType commandQueryType, object[] parameter = null)
+            where T : class
         {
             using (var sqlConnection = new SqlConnection(GetConnectionString()))
             {
@@ -183,6 +184,7 @@ namespace Infrastructure.Dapper
         }
 
         public async Task<IEnumerable<T>> ExecuteStoredProcedureAsync<T>(string query, Dictionary<string, object> parameters = null)
+            where T : class
         {
             using (var sqlConnection = new SqlConnection(GetConnectionString()))
             {
@@ -201,6 +203,7 @@ namespace Infrastructure.Dapper
         }
 
         public async Task<IEnumerable<T>> ExecuteQueryCommandAsync<T>(string query, Dictionary<string, object> parameters = null)
+            where T : class
         {
             using var sqlConnection = new SqlConnection(GetConnectionString());
             if (sqlConnection.State == ConnectionState.Closed)
@@ -271,7 +274,8 @@ namespace Infrastructure.Dapper
             }
         }
 
-        public async Task<(List<int> Outputs, IEnumerable<T> Result)> QueryProcedureOutputAsync(string query, CommandType commandType, object[] parameter = null)
+        public async Task<(List<int> Outputs, IEnumerable<T> Result)> QueryProcedureOutputAsync<T>(string query, CommandType commandType, object[] parameter = null)
+            where T : class
         {
             using (var sqlConnection = new SqlConnection(GetConnectionString()))
             {
