@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Repository.Interfaces;
 using System;
+using System.Data;
 using System.Dynamic;
 using System.Linq;
 using System.Security.Claims;
@@ -66,14 +67,13 @@ namespace Application.Services
         public async Task<ServiceResponse> AuthenticateAsync(AuthRequest request)
         {
             var iPageIndex = 1;
-            var iPageSize = 2;
+            var iPageSize = 1;
             object[] param = new object[]
              {
                 iPageIndex,iPageSize
              };
-            var x = await _dapperProvider.ExecuteQueryAsync<UserViewModel>(@"    SET NOCOUNT ON;
-	                DECLARE @iPageIndex INT =2;
-	                DECLARE @iPageSize INT =1;
+            await _dapperProvider.ExecuteQueryMultipleAsync<UserInfo>(@"    SET NOCOUNT ON;
+
 	                SELECT  ROW_NUMBER() OVER(ORDER BY au.CreatedAt DESC) AS Stt
                            , au.Id
 		                   , au.UserName
@@ -84,9 +84,17 @@ namespace Application.Services
                     INTO #Temp
                     FROM AppUsers au
 
-                    SELECT * FROM #Temp ORDER BY Stt OFFSET (@iPageIndex - 1) * @iPageSize ROWS FETCH NEXT @iPageSize ROWS ONLY;
+                    SELECT * FROM #Temp ORDER BY Stt OFFSET ( @iPageIndex - 1) * @iPageSize ROWS FETCH NEXT @iPageSize ROWS ONLY;
 
-                    DROP TABLE #Temp", Utilities.Enum.CommandQueryType.CommandType_Text, param);
+                     SELECT    ROW_NUMBER() OVER(ORDER BY au.CreatedAt DESC) AS Stt
+                           , au.Id
+		                   , au.UserName
+		                   , au.NormalizedUserName
+		                   , au.Email
+		                   , au.NormalizedEmail
+                    FROM AppUsers au
+
+                    DROP TABLE #Temp", CommandType.Text, param);
             var user = await _repository.FistOrDefaultAsync<AppUser>(u => u.UserName == request.UserName);
             if (user == null)
             {

@@ -3,18 +3,22 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Utilities.Constants;
 using Utilities.Enum;
+using ViewModels.Auth;
+using static Dapper.SqlMapper;
 
 namespace Infrastructure.Dapper
 {
     public interface IDapperProvider
     {
         Task<IEnumerable<T>> ExecuteQueryAsync<T>(string query, CommandQueryType commandQueryType, object[] parameter = null) where T : class;
+
+        Task ExecuteQueryMultipleAsync<T>(string query, CommandType commandQueryType, object[] parameter = null) where T : class;
 
         Task<IEnumerable<T>> ExecuteStoredProcedureAsync<T>(string query, Dictionary<string, object> parameters = null) where T : class;
 
@@ -58,7 +62,6 @@ namespace Infrastructure.Dapper
                 if (parameter != null)
                 {
                     string[] lstPara = query.Split(' ');
-                    query = lstPara[0];
                     int index = 0;
                     foreach (string item in lstPara)
                     {
@@ -67,11 +70,17 @@ namespace Infrastructure.Dapper
                             if (item.EndsWith(","))
                             {
                                 string para = item.Remove(item.Length - 1);
-                                dynamicParameters.Add(para, parameter[index]);
+                                if (!dynamicParameters.ParameterNames.Contains(para))
+                                {
+                                    dynamicParameters.Add(para, parameter[index]);
+                                }
                             }
                             else
                             {
-                                dynamicParameters.Add(item, parameter[index]);
+                                if (!dynamicParameters.ParameterNames.Contains(item.Replace("@", string.Empty)))
+                                {
+                                    dynamicParameters.Add(item, parameter[index]);
+                                }
                             }
                             index++;
                         }
@@ -82,6 +91,62 @@ namespace Infrastructure.Dapper
                     return await sqlConnection.QueryAsync<T>(query, dynamicParameters, commandType: CommandType.StoredProcedure);
                 else
                     return await sqlConnection.QueryAsync<T>(query, dynamicParameters, commandType: CommandType.Text);
+            }
+        }
+
+        public async Task ExecuteQueryMultipleAsync<T>(string query, CommandType commandQueryType, object[] parameter = null)
+            where T : class
+        {
+            using (var sqlConnection = new SqlConnection(GetConnectionString()))
+            {
+                if (sqlConnection.State == System.Data.ConnectionState.Closed)
+                    await sqlConnection.OpenAsync();
+
+                var dynamicParameters = new DynamicParameters();
+                T instance = Activator.CreateInstance<T>();
+                if (parameter != null)
+                {
+                    string[] lstPara = query.Split(' ');
+                    int index = 0;
+                    foreach (string item in lstPara)
+                    {
+                        if (item.Contains("@i"))
+                        {
+                            if (item.EndsWith(","))
+                            {
+                                string para = item.Remove(item.Length - 1);
+                                if (!dynamicParameters.ParameterNames.Contains(para))
+                                {
+                                    dynamicParameters.Add(para, parameter[index]);
+                                }
+                            }
+                            else
+                            {
+                                if (!dynamicParameters.ParameterNames.Contains(item.Replace("@", string.Empty)))
+                                {
+                                    dynamicParameters.Add(item, parameter[index]);
+                                }
+                            }
+                            index++;
+                        }
+                    }
+                }
+                GridReader resultQuery = await sqlConnection.QueryMultipleAsync(query, dynamicParameters, commandType: commandQueryType);
+
+                foreach (PropertyInfo propertyInfo in instance.GetType().GetProperties())
+                {
+                    if (propertyInfo.PropertyType.IsClass)
+                    {
+                        var type = propertyInfo.PropertyType.GetType();
+                        Type generic = typeof(Dictionary<,>);
+                        Type[] typeArgs = { type };
+
+                        //var value = resultQuery.Read < Activator.CreateInstance(generic.MakeGenericType(typeArgs)) > ().FirstOrDefault();
+                        var value = resultQuery.Read<UserViewModel>().ToList();
+                        Type constructed = generic.MakeGenericType(typeArgs);
+                        propertyInfo.SetValue(constructed, value);
+                    }
+                }
             }
         }
 

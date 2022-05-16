@@ -22,5 +22,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Domain\Domain.csproj" />
 		<ProjectReference Include="..\Utilities\Utilities.csproj" />
+		<ProjectReference Include="..\ViewModels\ViewModels.csproj" />
 	</ItemGroup>
 </Project>
