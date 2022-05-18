@@ -137,14 +137,17 @@ namespace Infrastructure.Dapper
                 {
                     if (propertyInfo.PropertyType.IsClass)
                     {
-                        var type = propertyInfo.PropertyType.GetType();
+                        var type = propertyInfo.PropertyType.GetGenericArguments()[0];
                         Type generic = typeof(Dictionary<,>);
                         Type[] typeArgs = { type };
 
                         //var value = resultQuery.Read < Activator.CreateInstance(generic.MakeGenericType(typeArgs)) > ().FirstOrDefault();
+                        var x = Activator.CreateInstance(type);
                         var value = resultQuery.Read<UserViewModel>().ToList();
-                        Type constructed = generic.MakeGenericType(typeArgs);
-                        propertyInfo.SetValue(constructed, value);
+                        //Type constr ucted = generic.MakeGenericType(typeArgs);
+                        //var x = Activator.CreateInstance(generic.MakeGenericType(typeArgs));
+                        var lst = Activator.CreateInstance(propertyInfo.PropertyType);
+                        propertyInfo.SetValue(lst, value, null);
                     }
                 }
             }
