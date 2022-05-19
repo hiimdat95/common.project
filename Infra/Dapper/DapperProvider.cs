@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,7 +10,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Utilities.Constants;
 using Utilities.Enum;
-using ViewModels.Auth;
 using static Dapper.SqlMapper;
 
 namespace Infrastructure.Dapper
@@ -18,7 +18,7 @@ namespace Infrastructure.Dapper
     {
         Task<IEnumerable<T>> ExecuteQueryAsync<T>(string query, CommandQueryType commandQueryType, object[] parameter = null) where T : class;
 
-        Task ExecuteQueryMultipleAsync<T>(string query, CommandType commandQueryType, object[] parameter = null) where T : class;
+        Task<T> ExecuteQueryMultipleAsync<T>(string query, CommandType commandQueryType, object[] parameter = null) where T : class;
 
         Task<IEnumerable<T>> ExecuteStoredProcedureAsync<T>(string query, Dictionary<string, object> parameters = null) where T : class;
 
@@ -94,14 +94,13 @@ namespace Infrastructure.Dapper
             }
         }
 
-        public async Task ExecuteQueryMultipleAsync<T>(string query, CommandType commandQueryType, object[] parameter = null)
+        public async Task<T> ExecuteQueryMultipleAsync<T>(string query, CommandType commandQueryType, object[] parameter = null)
             where T : class
         {
             using (var sqlConnection = new SqlConnection(GetConnectionString()))
             {
                 if (sqlConnection.State == System.Data.ConnectionState.Closed)
                     await sqlConnection.OpenAsync();
-
                 var dynamicParameters = new DynamicParameters();
                 T instance = Activator.CreateInstance<T>();
                 if (parameter != null)
@@ -135,24 +134,89 @@ namespace Infrastructure.Dapper
 
                 foreach (PropertyInfo propertyInfo in instance.GetType().GetProperties())
                 {
-                    if (propertyInfo.PropertyType.IsClass)
-                    {
-                        var type = propertyInfo.PropertyType.GetGenericArguments()[0];
-                        Type generic = typeof(Dictionary<,>);
-                        Type[] typeArgs = { type };
+                    //Type type = propertyInfo.PropertyType.GetGenericArguments()[0];
+                    //Type generic = typeof(List<>);
+                    //Type[] typeArgs = { type };
 
-                        //var value = resultQuery.Read < Activator.CreateInstance(generic.MakeGenericType(typeArgs)) > ().FirstOrDefault();
-                        var x = Activator.CreateInstance(type);
-                        var value = resultQuery.Read<UserViewModel>().ToList();
-                        //Type constr ucted = generic.MakeGenericType(typeArgs);
-                        //var x = Activator.CreateInstance(generic.MakeGenericType(typeArgs));
-                        var lst = Activator.CreateInstance(propertyInfo.PropertyType);
-                        propertyInfo.SetValue(lst, value, null);
+                    //var value = resultQuery.Read < Activator.CreateInstance(generic.MakeGenericType(typeArgs)) > ().FirstOrDefault();
+                    //var x = Activator.CreateInstance(type);
+                    //var value = resultQuery.Read().ToList();
+                    //var u1 = value.FirstOrDefault();
+
+                    //Type constructed = generic.MakeGenericType(typeArgs);
+                    //var x2 = Activator.CreateInstance(generic.MakeGenericType(typeArgs));
+                    //var lst = Activator.CreateInstance(propertyInfo.PropertyType);
+                    //x2 = value;
+                    //instance.GetType().GetProperty(propertyInfo.Name).SetValue(instance, value.OfType< Activator.CreateInstance(propertyInfo.PropertyType).GetType()>, null);
+
+                    //var listType = typeof(List<>).MakeGenericType(propertyInfo.PropertyType);
+                    //var list = Activator.CreateInstance(listType);
+                    //var addMethod = listType.GetMethod("Add");
+                    //addMethod.Invoke(list, new object[] { value });
+
+                    //Type myNewList = typeof(List<>);
+                    //Type typeInIList = propertyInfo.PropertyType.GenericTypeArguments[0];
+                    //Type aStringListType = myNewList.MakeGenericType(typeInIList);
+                    //dynamic newStringList = Convert.ChangeType(value, aStringListType);
+                    //value.Cast<aStringListType>();
+                    //foreach (var item in value)
+                    //{
+                    //    //var filterType = typeof(item);
+                    //    //var method = type.GetMethod(, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Static);
+                    //    var item2 = Convert.ChangeType(value, generic.MakeGenericType(typeArgs));
+                    //}
+                    //var xvalue = Convert.ChangeType(value, propertyInfo.PropertyType);
+                    dynamic value = null;
+                    //dynamic value = resultQuery.Read<dynamic>().ToList();
+                    if (propertyInfo.PropertyType.GenericTypeArguments.Length > 0)
+                    {
+                        value = resultQuery.Read().ToList();
+                        instance.GetType().GetProperty(propertyInfo.Name).SetValue(instance, value, null);
                     }
+                    else if (propertyInfo.PropertyType.IsClass)
+                    {
+                        value = resultQuery.Read().FirstOrDefault();
+                        instance.GetType().GetProperty(propertyInfo.Name).SetValue(instance, value, null);
+                    }
+                    else
+                    {
+                        value = resultQuery.Read<string>().FirstOrDefault();
+                        instance.GetType().GetProperty(propertyInfo.Name).SetValue(instance, Convert.ChangeType(value, propertyInfo.PropertyType), null);
+                    }
+                    //var x = JsonConvert.DeserializeObject<object>(JsonConvert.SerializeObject(value));
                 }
+                return instance;
             }
         }
 
+        //private List CreateListFromType(Type listType)
+        //{
+        //    // Check we have a type that implements IList
+        //    Type iListType = typeof(IList);
+        //    if (!listType.GetInterfaces().Contains(iListType))
+        //    {
+        //        throw new ArgumentException("No IList", nameof(listType));
+        //    }
+
+        //    // Check we have a a generic type parameter and get it
+        //    Type elementType = listType.GenericTypeArguments.FirstOrDefault();
+        //    if (elementType == null)
+        //    {
+        //        throw new ArgumentException("No Element Type", nameof(listType));
+        //    }
+
+        //    // Create a list of the required type and cast to IList
+        //    IList list = Activator.CreateInstance( n
+        //        list.Add(CreateFooFromType(elementType));
+        //    }
+
+        //    // DO something with list which is now a filled object of type listType
+        //    return list;
+        //}
+        //private object CreateFooFromType(Type t)
+        //{
+        //    return Activator.CreateInstance(t);
+        //}
         public async Task<List<int>> ExcuteProcedureOutputAsync(string query, CommandType commandQueryType, object[] parameter = null)
         {
             using (var sqlConnection = new SqlConnection(GetConnectionString()))

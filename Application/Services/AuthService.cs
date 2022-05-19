@@ -6,8 +6,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Repository.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Dynamic;
 using System.Linq;
@@ -72,7 +74,7 @@ namespace Application.Services
              {
                 iPageIndex,iPageSize
              };
-            await _dapperProvider.ExecuteQueryMultipleAsync<UserInfo>(@"    SET NOCOUNT ON;
+            var x = await _dapperProvider.ExecuteQueryMultipleAsync<UserInfo>(@"    SET NOCOUNT ON;
 
 	                SELECT  ROW_NUMBER() OVER(ORDER BY au.CreatedAt DESC) AS Stt
                            , au.Id
@@ -94,7 +96,17 @@ namespace Application.Services
 		                   , au.NormalizedEmail
                     FROM AppUsers au
 
+                    SELECT
+                            TOP 1 au.Id
+		                   , au.UserName
+		                   , au.NormalizedUserName
+		                   , au.Email
+		                   , au.NormalizedEmail FROM AppUsers au
+
+                    SELECT COUNT(1) FROM AppUsers
                     DROP TABLE #Temp", CommandType.Text, param);
+            //var strings = Newtonsoft.Json.JsonConvert.SerializeObject(x.ListUser1);
+            List<UserViewModel> lstUser = JsonConvert.DeserializeObject<List<UserViewModel>>(JsonConvert.SerializeObject(x.ListUser1));
             var user = await _repository.FistOrDefaultAsync<AppUser>(u => u.UserName == request.UserName);
             if (user == null)
             {
