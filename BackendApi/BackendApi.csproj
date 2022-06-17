@@ -17,16 +17,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Remove="Queries\20220101001.sql" />
-		<None Remove="Queries\20220124001.sql" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<EmbeddedResource Include="Queries\20220124001.sql" />
-		<EmbeddedResource Include="Queries\20220101001.sql" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.12" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.8" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.8">

@@ -1,3 +1,0 @@
-﻿CREATE OR ALTER VIEW Vw_User
-AS
-	SELECT * FROM AppUsers

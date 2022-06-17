@@ -1,9 +1,11 @@
 ﻿using Application.Interfaces;
 using AutoMapper;
 using Domain.Entities;
+using DynamicExpressions;
 using Infrastructure.Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -11,7 +13,6 @@ using Repository.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Dynamic;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -64,6 +65,62 @@ namespace Application.Services
             _config = config;
             _emailService = emailService;
             _dapperProvider = dapperProvider;
+        }
+
+        public async Task<ServiceResponse> GetAllAsync(PaginatedInputModel pagingParams)
+        {
+            if (pagingParams == null)
+            {
+                return Ok(new PagedResult<AppUser>());
+            }
+            var listItem = _repository.AsQueryable<AppUser>(null);
+            var predicate = new DynamicFilterBuilder<AppUser>()
+
+  .And(b => b.And("UserName", FilterOperator.Contains, "vu11"))
+  .Build();
+            var data = listItem.Where(predicate);
+
+            #region [Filter]
+
+            if (pagingParams.FilterParam.Any())
+            {
+                listItem = FilterUtility.Filter<AppUser>.FilteredData(pagingParams.FilterParam, listItem) ?? listItem;
+            }
+
+            #endregion [Filter]
+
+            #region [Sorting]
+
+            if (pagingParams.SortingParams.Any())
+            {
+                listItem = SortingUtility.Sorting<AppUser>.SortData(listItem, pagingParams.SortingParams);
+            }
+
+            #endregion [Sorting]
+
+            #region [Grouping]
+
+            if (pagingParams.GroupingColumns != null && pagingParams.GroupingColumns.Any())
+            {
+                listItem = SortingUtility.Sorting<AppUser>.GroupingData(listItem, pagingParams.GroupingColumns) ?? listItem;
+            }
+
+            #endregion [Grouping]
+
+            #region [Paging]
+
+            var totalRow = await listItem.CountAsync();
+            var pageData = await listItem.Skip((pagingParams.PageNumber - 1) * pagingParams.PageSize).Take(pagingParams.PageSize).ToListAsync();
+
+            return Ok(new PagedResult<AppUser>
+            {
+                TotalCount = totalRow,
+                PageSize = pagingParams.PageSize,
+                PageIndex = pagingParams.PageNumber,
+                Items = pageData
+            });
+
+            #endregion [Paging]
         }
 
         public async Task<ServiceResponse> AuthenticateAsync(AuthRequest request)

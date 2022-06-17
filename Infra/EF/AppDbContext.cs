@@ -26,7 +26,6 @@ namespace Infrastructure.EF
         }
 
         public DbSet<RefreshToken> RefreshTokens { get; set; }
-        public DbSet<QueryMigration> QueryMigrations { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<CategoryItem> CategoryItems { get; set; }
         public DbSet<Profile> Profiles { get; set; }
@@ -40,7 +39,6 @@ namespace Infrastructure.EF
             modelBuilder.ApplyConfiguration(new AppUserConfiguration());
             modelBuilder.ApplyConfiguration(new AppRoleConfiguration());
             modelBuilder.ApplyConfiguration(new RefreshTokenConfiguration());
-            modelBuilder.ApplyConfiguration(new QueryMigrationConfiguration());
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
             modelBuilder.ApplyConfiguration(new CategoryItemConfiguration());
             modelBuilder.ApplyConfiguration(new ProfileConfiguration());

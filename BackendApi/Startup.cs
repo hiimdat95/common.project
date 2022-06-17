@@ -135,7 +135,6 @@ namespace ioc.BackendApi
             var authConfig = Configuration.GetSection(nameof(AuthConfig));
             services.Configure<AuthConfig>(authConfig);
 
-            services.AddTransient<QueryMigrationInitilize>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddControllers();
 

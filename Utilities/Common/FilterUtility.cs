@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LinqKit;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -32,7 +33,7 @@ namespace Utilities.Common
 
         public static class Filter<T>
         {
-            public static IEnumerable<T> FilteredData(IEnumerable<FilterParams> filterParams, IEnumerable<T> data)
+            public static IQueryable<T> FilteredData(IEnumerable<FilterParams> filterParams, IQueryable<T> data)
             {
                 IEnumerable<string> distinctColumns = filterParams.Where(x => !String.IsNullOrEmpty(x.ColumnName)).Select(x => x.ColumnName).Distinct();
 
@@ -63,7 +64,7 @@ namespace Utilities.Common
                 return data;
             }
 
-            private static IEnumerable<T> FilterData(FilterOptions filterOption, IEnumerable<T> data, PropertyInfo filterColumn, string filterValue)
+            private static IQueryable<T> FilterData(FilterOptions filterOption, IQueryable<T> data, PropertyInfo filterColumn, string filterValue)
             {
                 data = FilterDataStringDataType(filterOption, data, filterColumn, filterValue);
                 data = FilterDataCustomGreaterThan(filterOption, data, filterColumn, filterValue);
@@ -72,38 +73,40 @@ namespace Utilities.Common
                 return data;
             }
 
-            private static IEnumerable<T> FilterDataStringDataType(FilterOptions filterOption, IEnumerable<T> data, PropertyInfo filterColumn, string filterValue)
+            private static IQueryable<T> FilterDataStringDataType(FilterOptions filterOption, IQueryable<T> data, PropertyInfo filterColumn, string filterValue)
             {
                 if (filterOption == FilterOptions.StartsWith)
                 {
-                    data = data.Where(x => filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString().ToLower().StartsWith(filterValue.ToString().ToLower())).ToList();
+                    data = data.Where(x => filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString().ToLower().StartsWith(filterValue.ToString().ToLower()));
                 }
                 else if (filterOption == FilterOptions.EndsWith)
                 {
-                    data = data.Where(x => filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString().ToLower().EndsWith(filterValue.ToString().ToLower())).ToList();
+                    data = data.Where(x => filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString().ToLower().EndsWith(filterValue.ToString().ToLower()));
                 }
                 else if (filterOption == FilterOptions.Contains)
                 {
-                    data = data.Where(x => filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString().ToLower().Contains(filterValue.ToString().ToLower())).ToList();
+                    var conditions = PredicateBuilder.New<T>();
+                    conditions = conditions.And(x => filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString().ToLower().Contains(filterValue.ToString().ToLower()));
+                    data = data.Where(conditions);
                 }
                 else if (filterOption == FilterOptions.DoesNotContain)
                 {
                     data = data.Where(x => filterColumn.GetValue(x, null) == null ||
-                                       (filterColumn.GetValue(x, null) != null && !filterColumn.GetValue(x, null).ToString().ToLower().Contains(filterValue.ToString().ToLower()))).ToList();
+                                       (filterColumn.GetValue(x, null) != null && !filterColumn.GetValue(x, null).ToString().ToLower().Contains(filterValue.ToString().ToLower())));
                 }
                 else if (filterOption == FilterOptions.IsEmpty)
                 {
                     data = data.Where(x => filterColumn.GetValue(x, null) == null ||
-                                         (filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString() == string.Empty)).ToList();
+                                         (filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString() == string.Empty));
                 }
                 else if (filterOption == FilterOptions.IsNotEmpty)
                 {
-                    data = data.Where(x => filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString() != string.Empty).ToList();
+                    data = data.Where(x => filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString() != string.Empty);
                 }
                 return data;
             }
 
-            private static IEnumerable<T> FilterDataCustomGreaterThan(FilterOptions filterOption, IEnumerable<T> data, PropertyInfo filterColumn, string filterValue)
+            private static IQueryable<T> FilterDataCustomGreaterThan(FilterOptions filterOption, IQueryable<T> data, PropertyInfo filterColumn, string filterValue)
             {
                 int outValue;
                 DateTime dateValue;
@@ -111,29 +114,29 @@ namespace Utilities.Common
                 {
                     if ((filterColumn.PropertyType == typeof(Int32) || filterColumn.PropertyType == typeof(Nullable<Int32>)) && Int32.TryParse(filterValue, out outValue))
                     {
-                        data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) > outValue).ToList();
+                        data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) > outValue);
                     }
                     else if ((filterColumn.PropertyType == typeof(Nullable<DateTime>)) && DateTime.TryParse(filterValue, out dateValue))
                     {
-                        data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) > dateValue).ToList();
+                        data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) > dateValue);
                     }
                 }
                 else if (filterOption == FilterOptions.IsGreaterThanOrEqualTo)
                 {
                     if ((filterColumn.PropertyType == typeof(Int32) || filterColumn.PropertyType == typeof(Nullable<Int32>)) && Int32.TryParse(filterValue, out outValue))
                     {
-                        data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) >= outValue).ToList();
+                        data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) >= outValue);
                     }
                     else if ((filterColumn.PropertyType == typeof(Nullable<DateTime>)) && DateTime.TryParse(filterValue, out dateValue))
                     {
-                        data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) >= dateValue).ToList();
+                        data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) >= dateValue);
                     }
                 }
 
                 return data;
             }
 
-            private static IEnumerable<T> FilterDataCustomLessThan(FilterOptions filterOption, IEnumerable<T> data, PropertyInfo filterColumn, string filterValue)
+            private static IQueryable<T> FilterDataCustomLessThan(FilterOptions filterOption, IQueryable<T> data, PropertyInfo filterColumn, string filterValue)
             {
                 int outValue;
                 DateTime dateValue;
@@ -141,28 +144,28 @@ namespace Utilities.Common
                 {
                     if ((filterColumn.PropertyType == typeof(Int32) || filterColumn.PropertyType == typeof(Nullable<Int32>)) && Int32.TryParse(filterValue, out outValue))
                     {
-                        data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) < outValue).ToList();
+                        data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) < outValue);
                     }
                     else if ((filterColumn.PropertyType == typeof(Nullable<DateTime>)) && DateTime.TryParse(filterValue, out dateValue))
                     {
-                        data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) < dateValue).ToList();
+                        data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) < dateValue);
                     }
                 }
                 else if (filterOption == FilterOptions.IsLessThanOrEqualTo)
                 {
                     if ((filterColumn.PropertyType == typeof(Int32) || filterColumn.PropertyType == typeof(Nullable<Int32>)) && Int32.TryParse(filterValue, out outValue))
                     {
-                        data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) <= outValue).ToList();
+                        data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) <= outValue);
                     }
                     else if ((filterColumn.PropertyType == typeof(Nullable<DateTime>)) && DateTime.TryParse(filterValue, out dateValue))
                     {
-                        data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) <= dateValue).ToList();
+                        data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) <= dateValue);
                     }
                 }
                 return data;
             }
 
-            private static IEnumerable<T> FilterDataCustomEqualThan(FilterOptions filterOption, IEnumerable<T> data, PropertyInfo filterColumn, string filterValue)
+            private static IQueryable<T> FilterDataCustomEqualThan(FilterOptions filterOption, IQueryable<T> data, PropertyInfo filterColumn, string filterValue)
             {
                 int outValue;
                 DateTime dateValue;
@@ -171,21 +174,21 @@ namespace Utilities.Common
                     if (filterValue == string.Empty)
                     {
                         data = data.Where(x => filterColumn.GetValue(x, null) == null
-                                        || (filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString().ToLower() == string.Empty)).ToList();
+                                        || (filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString().ToLower() == string.Empty));
                     }
                     else
                     {
                         if ((filterColumn.PropertyType == typeof(Int32) || filterColumn.PropertyType == typeof(Nullable<Int32>)) && Int32.TryParse(filterValue, out outValue))
                         {
-                            data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) == outValue).ToList();
+                            data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) == outValue);
                         }
                         else if ((filterColumn.PropertyType == typeof(Nullable<DateTime>)) && DateTime.TryParse(filterValue, out dateValue))
                         {
-                            data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) == dateValue).ToList();
+                            data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) == dateValue);
                         }
                         else
                         {
-                            data = data.Where(x => filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString().ToLower() == filterValue.ToLower()).ToList();
+                            data = data.Where(x => filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString().ToLower() == filterValue.ToLower());
                         }
                     }
                 }
@@ -193,16 +196,16 @@ namespace Utilities.Common
                 {
                     if ((filterColumn.PropertyType == typeof(Int32) || filterColumn.PropertyType == typeof(Nullable<Int32>)) && Int32.TryParse(filterValue, out outValue))
                     {
-                        data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) != outValue).ToList();
+                        data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) != outValue);
                     }
                     else if ((filterColumn.PropertyType == typeof(Nullable<DateTime>)) && DateTime.TryParse(filterValue, out dateValue))
                     {
-                        data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) != dateValue).ToList();
+                        data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) != dateValue);
                     }
                     else
                     {
                         data = data.Where(x => filterColumn.GetValue(x, null) == null ||
-                                         (filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString().ToLower() != filterValue.ToLower())).ToList();
+                                         (filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString().ToLower() != filterValue.ToLower()));
                     }
                 }
 

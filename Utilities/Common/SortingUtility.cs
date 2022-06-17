@@ -21,9 +21,9 @@ namespace Utilities.Common
 
         public static class Sorting<T>
         {
-            public static IEnumerable<T> GroupingData(IEnumerable<T> data, IEnumerable<string> groupingColumns)
+            public static IQueryable<T> GroupingData(IQueryable<T> data, IEnumerable<string> groupingColumns)
             {
-                IOrderedEnumerable<T> groupedData = null;
+                IOrderedQueryable<T> groupedData = null;
 
                 foreach (string grpCol in groupingColumns.Where(x => !String.IsNullOrEmpty(x)))
                 {
@@ -38,9 +38,9 @@ namespace Utilities.Common
                 return groupedData ?? data;
             }
 
-            public static IEnumerable<T> SortData(IEnumerable<T> data, IEnumerable<SortingParams> sortingParams)
+            public static IQueryable<T> SortData(IQueryable<T> data, IEnumerable<SortingParams> sortingParams)
             {
-                IOrderedEnumerable<T> sortedData = null;
+                IOrderedQueryable<T> sortedData = null;
                 foreach (var sortingParam in sortingParams.Where(x => !String.IsNullOrEmpty(x.ColumnName)))
                 {
                     var col = typeof(T).GetProperty(sortingParam.ColumnName, BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public);

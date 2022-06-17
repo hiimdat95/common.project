@@ -1,8 +1,8 @@
 ﻿using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
 using System.Threading.Tasks;
+using Utilities.Common;
 using Utilities.Contracts;
 using ViewModels.Auth;
 using ViewModels.Users;
@@ -16,6 +16,10 @@ namespace BackendApi.Controllers
         private readonly IAuthService _authService;
 
         public AuthController(IAuthService authService) => _authService = authService;
+
+        [HttpPost("list")]
+        [AllowAnonymous]
+        public async Task<ServiceResponse> GetAll(PaginatedInputModel model) => await _authService.GetAllAsync(model);
 
         [HttpPost("login")]
         public async Task<ServiceResponse> Login(LoginModel model) => await _authService.AuthenticateAsync(new AuthRequest
