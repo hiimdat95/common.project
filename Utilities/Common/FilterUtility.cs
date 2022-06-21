@@ -3,37 +3,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using DynamicExpressions;
+using System.Linq.Expressions;
 
 namespace Utilities.Common
 {
     public class FilterUtility
     {
-        public enum FilterOptions
-        {
-            StartsWith = 1,
-            EndsWith = 2,
-            Contains = 3,
-            DoesNotContain = 4,
-            IsEmpty = 5,
-            IsNotEmpty = 6,
-            IsGreaterThan = 7,
-            IsGreaterThanOrEqualTo = 8,
-            IsLessThan = 9,
-            IsLessThanOrEqualTo = 10,
-            IsEqualTo = 11,
-            IsNotEqualTo = 12
-        }
-
         public class FilterParams
         {
             public string ColumnName { get; set; } = string.Empty;
             public string FilterValue { get; set; } = string.Empty;
-            public FilterOptions FilterOption { get; set; } = FilterOptions.Contains;
+            public DynamicExpressions.FilterOperator FilterOperator { get; set; } = DynamicExpressions.FilterOperator.Contains;
         }
 
         public static class Filter<T>
         {
-            public static IQueryable<T> FilteredData(IEnumerable<FilterParams> filterParams, IQueryable<T> data)
+            public static DynamicFilterBuilder<T> FilteredData(IEnumerable<FilterParams> filterParams, DynamicFilterBuilder<T> predicate)
             {
                 IEnumerable<string> distinctColumns = filterParams.Where(x => !String.IsNullOrEmpty(x.ColumnName)).Select(x => x.ColumnName).Distinct();
 
@@ -44,172 +30,167 @@ namespace Utilities.Common
                     {
                         IEnumerable<FilterParams> filterValues = filterParams.Where(x => x.ColumnName.Equals(colName)).Distinct();
 
-                        if (filterValues.Count() > 1)
-                        {
-                            IEnumerable<T> sameColData = Enumerable.Empty<T>();
+                        //if (filterValues.Count() > 1)
+                        //{
+                        //    IEnumerable<T> sameColData = Enumerable.Empty<T>();
 
-                            foreach (var val in filterValues)
-                            {
-                                sameColData = sameColData.Concat(FilterData(val.FilterOption, data, filterColumn, val.FilterValue));
-                            }
+                        //    foreach (var val in filterValues)
+                        //    {
+                        //        sameColData = sameColData.Concat(FilterData(val.FilterOperator, data, filterColumn, val.FilterValue));
+                        //    }
 
-                            data = data.Intersect(sameColData);
-                        }
-                        else
-                        {
-                            data = FilterData(filterValues.FirstOrDefault().FilterOption, data, filterColumn, filterValues.FirstOrDefault().FilterValue);
-                        }
+                        //    data = data.Intersect(sameColData);
+                        //}
+                        //else
+                        //{
+                        predicate = FilterData(filterValues.FirstOrDefault().FilterOperator, predicate, filterColumn, filterValues.FirstOrDefault().FilterValue);
+                        //}
                     }
                 }
-                return data;
+                return predicate;
             }
 
-            private static IQueryable<T> FilterData(FilterOptions filterOption, IQueryable<T> data, PropertyInfo filterColumn, string filterValue)
+            private static DynamicFilterBuilder<T> FilterData(DynamicExpressions.FilterOperator filterOption, DynamicFilterBuilder<T> predicate, PropertyInfo filterColumn, string filterValue)
             {
-                data = FilterDataStringDataType(filterOption, data, filterColumn, filterValue);
-                data = FilterDataCustomGreaterThan(filterOption, data, filterColumn, filterValue);
-                data = FilterDataCustomLessThan(filterOption, data, filterColumn, filterValue);
-                data = FilterDataCustomEqualThan(filterOption, data, filterColumn, filterValue);
-                return data;
+                predicate = FilterDataStringDataType(filterOption, predicate, filterColumn, filterValue);
+                predicate = FilterDataCustomGreaterThan(filterOption, predicate, filterColumn, filterValue);
+                predicate = FilterDataCustomLessThan(filterOption, predicate, filterColumn, filterValue);
+                predicate = FilterDataCustomEqualThan(filterOption, predicate, filterColumn, filterValue);
+                return predicate;
             }
 
-            private static IQueryable<T> FilterDataStringDataType(FilterOptions filterOption, IQueryable<T> data, PropertyInfo filterColumn, string filterValue)
+            private static DynamicFilterBuilder<T> FilterDataStringDataType(FilterOperator filterOperator, DynamicFilterBuilder<T> predicate, PropertyInfo filterColumn, string filterValue)
             {
-                if (filterOption == FilterOptions.StartsWith)
+                if (filterOperator == FilterOperator.StartsWith)
                 {
-                    data = data.Where(x => filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString().ToLower().StartsWith(filterValue.ToString().ToLower()));
+                    predicate = predicate.And(b => b.And(filterColumn.Name, FilterOperator.StartsWith, filterValue.ToString()));
                 }
-                else if (filterOption == FilterOptions.EndsWith)
+                else if (filterOperator == FilterOperator.EndsWith)
                 {
-                    data = data.Where(x => filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString().ToLower().EndsWith(filterValue.ToString().ToLower()));
+                    predicate = predicate.And(b => b.And(filterColumn.Name, FilterOperator.EndsWith, filterValue.ToString()));
                 }
-                else if (filterOption == FilterOptions.Contains)
+                else if (filterOperator == FilterOperator.Contains)
                 {
-                    var conditions = PredicateBuilder.New<T>();
-                    conditions = conditions.And(x => filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString().ToLower().Contains(filterValue.ToString().ToLower()));
-                    data = data.Where(conditions);
+                    predicate = predicate.And(b => b.And(filterColumn.Name, FilterOperator.Contains, filterValue.ToString()));
                 }
-                else if (filterOption == FilterOptions.DoesNotContain)
+                else if (filterOperator == FilterOperator.NotContains)
                 {
-                    data = data.Where(x => filterColumn.GetValue(x, null) == null ||
-                                       (filterColumn.GetValue(x, null) != null && !filterColumn.GetValue(x, null).ToString().ToLower().Contains(filterValue.ToString().ToLower())));
+                    predicate = predicate.And(b => b.And(filterColumn.Name, FilterOperator.NotContains, filterValue.ToString()));
                 }
-                else if (filterOption == FilterOptions.IsEmpty)
+                else if (filterOperator == FilterOperator.IsEmpty)
                 {
-                    data = data.Where(x => filterColumn.GetValue(x, null) == null ||
-                                         (filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString() == string.Empty));
+                    predicate = predicate.And(b => b.And(filterColumn.Name, FilterOperator.IsEmpty, string.Empty));
                 }
-                else if (filterOption == FilterOptions.IsNotEmpty)
+                else if (filterOperator == FilterOperator.IsNotEmpty)
                 {
-                    data = data.Where(x => filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString() != string.Empty);
+                    predicate = predicate.And(b => b.And(filterColumn.Name, FilterOperator.IsNotEmpty, string.Empty));
                 }
-                return data;
+
+                return predicate;
             }
 
-            private static IQueryable<T> FilterDataCustomGreaterThan(FilterOptions filterOption, IQueryable<T> data, PropertyInfo filterColumn, string filterValue)
+            private static DynamicFilterBuilder<T> FilterDataCustomGreaterThan(FilterOperator filterOption, DynamicFilterBuilder<T> predicate, PropertyInfo filterColumn, string filterValue)
             {
                 int outValue;
                 DateTime dateValue;
-                if (filterOption == FilterOptions.IsGreaterThan)
+                if (filterOption == FilterOperator.GreaterThan)
                 {
                     if ((filterColumn.PropertyType == typeof(Int32) || filterColumn.PropertyType == typeof(Nullable<Int32>)) && Int32.TryParse(filterValue, out outValue))
                     {
-                        data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) > outValue);
+                        predicate = predicate.And(b => b.And(filterColumn.Name, FilterOperator.GreaterThan, outValue));
                     }
                     else if ((filterColumn.PropertyType == typeof(Nullable<DateTime>)) && DateTime.TryParse(filterValue, out dateValue))
                     {
-                        data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) > dateValue);
+                        predicate = predicate.And(b => b.And(filterColumn.Name, FilterOperator.GreaterThan, dateValue));
                     }
                 }
-                else if (filterOption == FilterOptions.IsGreaterThanOrEqualTo)
+                else if (filterOption == FilterOperator.GreaterThanOrEqual)
                 {
                     if ((filterColumn.PropertyType == typeof(Int32) || filterColumn.PropertyType == typeof(Nullable<Int32>)) && Int32.TryParse(filterValue, out outValue))
                     {
-                        data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) >= outValue);
+                        predicate = predicate.And(b => b.And(filterColumn.Name, FilterOperator.GreaterThanOrEqual, outValue));
                     }
                     else if ((filterColumn.PropertyType == typeof(Nullable<DateTime>)) && DateTime.TryParse(filterValue, out dateValue))
                     {
-                        data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) >= dateValue);
+                        predicate = predicate.And(b => b.And(filterColumn.Name, FilterOperator.GreaterThanOrEqual, dateValue));
                     }
                 }
 
-                return data;
+                return predicate;
             }
 
-            private static IQueryable<T> FilterDataCustomLessThan(FilterOptions filterOption, IQueryable<T> data, PropertyInfo filterColumn, string filterValue)
+            private static DynamicFilterBuilder<T> FilterDataCustomLessThan(FilterOperator filterOption, DynamicFilterBuilder<T> predicate, PropertyInfo filterColumn, string filterValue)
             {
                 int outValue;
                 DateTime dateValue;
-                if (filterOption == FilterOptions.IsLessThan)
+                if (filterOption == FilterOperator.LessThan)
                 {
                     if ((filterColumn.PropertyType == typeof(Int32) || filterColumn.PropertyType == typeof(Nullable<Int32>)) && Int32.TryParse(filterValue, out outValue))
                     {
-                        data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) < outValue);
+                        predicate = predicate.And(b => b.And(filterColumn.Name, FilterOperator.LessThan, outValue));
                     }
                     else if ((filterColumn.PropertyType == typeof(Nullable<DateTime>)) && DateTime.TryParse(filterValue, out dateValue))
                     {
-                        data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) < dateValue);
+                        predicate = predicate.And(b => b.And(filterColumn.Name, FilterOperator.LessThan, dateValue));
                     }
                 }
-                else if (filterOption == FilterOptions.IsLessThanOrEqualTo)
+                else if (filterOption == FilterOperator.LessThanOrEqual)
                 {
                     if ((filterColumn.PropertyType == typeof(Int32) || filterColumn.PropertyType == typeof(Nullable<Int32>)) && Int32.TryParse(filterValue, out outValue))
                     {
-                        data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) <= outValue);
+                        predicate = predicate.And(b => b.And(filterColumn.Name, FilterOperator.LessThanOrEqual, outValue));
                     }
                     else if ((filterColumn.PropertyType == typeof(Nullable<DateTime>)) && DateTime.TryParse(filterValue, out dateValue))
                     {
-                        data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) <= dateValue);
+                        predicate = predicate.And(b => b.And(filterColumn.Name, FilterOperator.LessThanOrEqual, dateValue));
                     }
                 }
-                return data;
+                return predicate;
             }
 
-            private static IQueryable<T> FilterDataCustomEqualThan(FilterOptions filterOption, IQueryable<T> data, PropertyInfo filterColumn, string filterValue)
+            private static DynamicFilterBuilder<T> FilterDataCustomEqualThan(FilterOperator filterOption, DynamicFilterBuilder<T> predicate, PropertyInfo filterColumn, string filterValue)
             {
                 int outValue;
                 DateTime dateValue;
-                if (filterOption == FilterOptions.IsEqualTo)
+                if (filterOption == FilterOperator.Equals)
                 {
                     if (filterValue == string.Empty)
                     {
-                        data = data.Where(x => filterColumn.GetValue(x, null) == null
-                                        || (filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString().ToLower() == string.Empty));
+                        predicate = predicate.And(b => b.And(filterColumn.Name, FilterOperator.Equals, string.Empty));
                     }
                     else
                     {
                         if ((filterColumn.PropertyType == typeof(Int32) || filterColumn.PropertyType == typeof(Nullable<Int32>)) && Int32.TryParse(filterValue, out outValue))
                         {
-                            data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) == outValue);
+                            predicate = predicate.And(b => b.And(filterColumn.Name, FilterOperator.Equals, outValue));
                         }
                         else if ((filterColumn.PropertyType == typeof(Nullable<DateTime>)) && DateTime.TryParse(filterValue, out dateValue))
                         {
-                            data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) == dateValue);
+                            predicate = predicate.And(b => b.And(filterColumn.Name, FilterOperator.Equals, dateValue));
                         }
                         else
                         {
-                            data = data.Where(x => filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString().ToLower() == filterValue.ToLower());
+                            predicate = predicate.And(b => b.And(filterColumn.Name, FilterOperator.Equals, filterValue));
                         }
                     }
                 }
-                else if (filterOption == FilterOptions.IsNotEqualTo)
+                else if (filterOption == FilterOperator.DoesntEqual)
                 {
                     if ((filterColumn.PropertyType == typeof(Int32) || filterColumn.PropertyType == typeof(Nullable<Int32>)) && Int32.TryParse(filterValue, out outValue))
                     {
-                        data = data.Where(x => Convert.ToInt32(filterColumn.GetValue(x, null)) != outValue);
+                        predicate = predicate.And(b => b.And(filterColumn.Name, FilterOperator.DoesntEqual, outValue));
                     }
                     else if ((filterColumn.PropertyType == typeof(Nullable<DateTime>)) && DateTime.TryParse(filterValue, out dateValue))
                     {
-                        data = data.Where(x => Convert.ToDateTime(filterColumn.GetValue(x, null)) != dateValue);
+                        predicate = predicate.And(b => b.And(filterColumn.Name, FilterOperator.DoesntEqual, dateValue));
                     }
                     else
                     {
-                        data = data.Where(x => filterColumn.GetValue(x, null) == null ||
-                                         (filterColumn.GetValue(x, null) != null && filterColumn.GetValue(x, null).ToString().ToLower() != filterValue.ToLower()));
+                        predicate = predicate.And(b => b.And(filterColumn.Name, FilterOperator.DoesntEqual, filterValue));
                     }
                 }
 
-                return data;
+                return predicate;
             }
         }
     }

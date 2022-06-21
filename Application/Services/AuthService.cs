@@ -74,18 +74,17 @@ namespace Application.Services
                 return Ok(new PagedResult<AppUser>());
             }
             var listItem = _repository.AsQueryable<AppUser>(null);
-            var predicate = new DynamicFilterBuilder<AppUser>()
-
-  .And(b => b.And("UserName", FilterOperator.Contains, "vu11"))
-  .Build();
-            var data = listItem.Where(predicate);
+            DynamicFilterBuilder<AppUser> predicate = new DynamicFilterBuilder<AppUser>();
+            predicate = FilterUtility.Filter<AppUser>.FilteredData(pagingParams.FilterParam, predicate);
+            var expression = predicate.Build();
+            var data = listItem.Where(expression);
 
             #region [Filter]
 
-            if (pagingParams.FilterParam.Any())
-            {
-                listItem = FilterUtility.Filter<AppUser>.FilteredData(pagingParams.FilterParam, listItem) ?? listItem;
-            }
+            //if (pagingParams.FilterParam.Any())
+            //{
+            //    listItem = FilterUtility.Filter<AppUser>.FilteredData(pagingParams.FilterParam, listItem) ?? listItem;
+            //}
 
             #endregion [Filter]
 
