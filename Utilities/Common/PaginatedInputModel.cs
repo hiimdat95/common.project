@@ -9,7 +9,7 @@ namespace Utilities.Common
             SortingParams = new HashSet<SortingUtility.SortingParams>();
             FilterParam = new HashSet<FilterUtility.FilterParams>();
         }
-
+        public string Object { get; set; }
         public IEnumerable<SortingUtility.SortingParams> SortingParams { set; get; }
         public IEnumerable<FilterUtility.FilterParams> FilterParam { get; set; }
         public IEnumerable<string> GroupingColumns { get; set; } = null;

@@ -1,6 +1,8 @@
 ﻿using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using Utilities.Common;
 using Utilities.Contracts;
@@ -19,7 +21,17 @@ namespace BackendApi.Controllers
 
         [HttpPost("list")]
         [AllowAnonymous]
-        public async Task<ServiceResponse> GetAll(PaginatedInputModel model) => await _authService.GetAllAsync(model);
+        public async Task<ServiceResponse> GetAll(PaginatedInputModel model)
+        {
+            //Type genericType = typeof(IAuditedEntity);
+            //Type[] typeArgs = { Type.GetType(model.Object) };
+            //Type entityType = genericType.MakeGenericType(typeArgs);
+            //object entity = Activator.CreateInstance(entityType);
+
+            Assembly a = Assembly.Load("Domain");
+            Type type = a.GetType("Domain.Entities.Profile");
+            return await _authService.GetAllAsync(model);
+        }
 
         [HttpPost("login")]
         public async Task<ServiceResponse> Login(LoginModel model) => await _authService.AuthenticateAsync(new AuthRequest

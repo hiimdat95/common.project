@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Utilities.Common
@@ -38,25 +39,23 @@ namespace Utilities.Common
                 return groupedData ?? data;
             }
 
+            public static IQueryable<T> OrderByDynamic(IQueryable<T> source , string orderByProperty, bool desc)
+            {
+                string command = desc ? "OrderByDescending" : "OrderBy";
+                var type = typeof(T);
+                var property = type.GetProperty(orderByProperty);
+                var parameter = Expression.Parameter(type, "p");
+                var properyAccess = Expression.MakeMemberAccess(parameter, property);
+                var orderByExpression = Expression.Lambda(properyAccess, parameter);
+                var resultExpression = Expression.Call(typeof(Queryable), command, new Type[] { type, property.PropertyType }, source.Expression, Expression.Quote(orderByExpression));
+                return source.Provider.CreateQuery<T>(resultExpression);
+            }
             public static IQueryable<T> SortData(IQueryable<T> data, IEnumerable<SortingParams> sortingParams)
             {
                 IOrderedQueryable<T> sortedData = null;
                 foreach (var sortingParam in sortingParams.Where(x => !String.IsNullOrEmpty(x.ColumnName)))
                 {
-                    var col = typeof(T).GetProperty(sortingParam.ColumnName, BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public);
-                    if (col != null)
-                    {
-                        if (sortedData == null)
-                        {
-                            sortedData = sortingParam.SortOrder == SortOrders.Asc ? data.OrderBy(x => col.GetValue(x, null))
-                                                                                                   : data.OrderByDescending(x => col.GetValue(x, null));
-                        }
-                        else
-                        {
-                            sortedData = sortingParam.SortOrder == SortOrders.Asc ? sortedData.ThenBy(x => col.GetValue(x, null))
-                                                                                            : sortedData.ThenByDescending(x => col.GetValue(x, null));
-                        }
-                    }
+                    data = OrderByDynamic(data, sortingParam.ColumnName, desc: sortingParam.SortOrder == SortOrders.Desc ? true : false);
                 }
                 return sortedData ?? data;
             }
