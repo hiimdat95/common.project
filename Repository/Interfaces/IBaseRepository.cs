@@ -30,7 +30,7 @@ namespace Repository.Interfaces
 
         void DeleteMany<TEntity>(List<TEntity> entities) where TEntity : class;
 
-        IQueryable<TEntity> AsQueryable<TEntity>(Expression<Func<TEntity, bool>> expression);
+        IQueryable<TEntity> AsQueryable<TEntity>(Expression<Func<TEntity, bool>> expression) where TEntity : class;
 
         Task<TEntity> FistOrDefaultAsync<TEntity>(Expression<Func<TEntity, bool>> expression) where TEntity : class;
 

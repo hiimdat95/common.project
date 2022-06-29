@@ -5,8 +5,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Interfaces\IDynamicService.cs" />
+	  <Compile Remove="Services\DynamicService.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="10.1.1" />
-		<PackageReference Include="DynamicExpressions.NET" Version="1.1.0" />
 		<PackageReference Include="MailKit" Version="2.15.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.8">
 		  <PrivateAssets>all</PrivateAssets>

@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -74,21 +75,24 @@ namespace Application.Services
                 return Ok(new PagedResult<AppUser>());
             }
             var listItem = _repository.AsQueryable<AppUser>(null);
-     
 
             #region [Filter]
 
             if (pagingParams.FilterParam.Any())
             {
-                DynamicFilterBuilder<AppUser> predicate = new DynamicFilterBuilder<AppUser>();
-                predicate = FilterUtility.Filter<AppUser>.FilteredData(pagingParams.FilterParam, predicate);
+                Assembly a = Assembly.Load("Domain");
+                Type type2 = a.GetType("Domain.Entities.Profile");
+                object entity = Activator.CreateInstance(type2);
+                DynamicFilterBuilder predicate = new DynamicFilterBuilder(entity);
+                predicate = FilterUtility.Filter < typeof(entity) >.FilteredData(pagingParams.FilterParam, predicate);
                 var expression = predicate.Build();
-                listItem = listItem.Where(expression);
+                //listItem = listItem.Where(expression);
             }
 
             #endregion [Filter]
 
             #region [Sorting]
+
             if (pagingParams.SortingParams.Any())
             {
                 listItem = SortingUtility.Sorting<AppUser>.SortData(listItem, pagingParams.SortingParams);
@@ -120,7 +124,6 @@ namespace Application.Services
 
             #endregion [Paging]
         }
-        
 
         public async Task<ServiceResponse> AuthenticateAsync(AuthRequest request)
         {

@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -66,7 +67,7 @@ namespace Application.Services
             _dapperProvider = dapperProvider;
         }
 
-        public async Task<ServiceResponse> GetAllAsync<T>(object objectInstance, PaginatedInputModel pagingParams)
+        public async Task<ServiceResponse> GetAllAsync<T>(PaginatedInputModel pagingParams)
         {
             if (pagingParams == null)
             {
@@ -78,10 +79,13 @@ namespace Application.Services
 
             if (pagingParams.FilterParam.Any())
             {
-                DynamicFilterBuilder<T> predicate = new DynamicFilterBuilder<T>();
+                Assembly a = Assembly.Load("Domain");
+                Type type2 = a.GetType("Domain.Entities.Profile");
+                object entity = Activator.CreateInstance(type2);
+                DynamicFilterBuilder predicate = new DynamicFilterBuilder(entity);
                 predicate = FilterUtility.Filter<T>.FilteredData(pagingParams.FilterParam, predicate);
                 var expression = predicate.Build();
-                listItem = listItem.Where(expression);
+                //listItem = listItem.Where(expression);
             }
 
             #endregion [Filter]

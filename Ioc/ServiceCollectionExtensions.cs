@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces;
 using Application.Mappers;
 using Application.Services;
+using Autofac;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Dapper;
@@ -25,6 +26,9 @@ namespace Ioc
                                 });
             IMapper mapper = mapperConfig.CreateMapper();
             services.AddSingleton(mapper);
+
+            var builder = new ContainerBuilder();
+            builder.RegisterType<Domain.Entities.Profile>();
 
             services.AddTransient<IBaseRepository, BaseRepository>();
             services.AddScoped<ICurrentPrincipal, CurrentPrincipal>();

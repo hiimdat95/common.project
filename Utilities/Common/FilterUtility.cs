@@ -19,7 +19,7 @@ namespace Utilities.Common
 
         public static class Filter<T>
         {
-            public static DynamicFilterBuilder<T> FilteredData(IEnumerable<FilterParams> filterParams, DynamicFilterBuilder<T> predicate)
+            public static DynamicFilterBuilder FilteredData(IEnumerable<FilterParams> filterParams, DynamicFilterBuilder predicate)
             {
                 IEnumerable<string> distinctColumns = filterParams.Where(x => !String.IsNullOrEmpty(x.ColumnName)).Select(x => x.ColumnName).Distinct();
 
@@ -50,7 +50,7 @@ namespace Utilities.Common
                 return predicate;
             }
 
-            private static DynamicFilterBuilder<T> FilterData(DynamicExpressions.FilterOperator filterOption, DynamicFilterBuilder<T> predicate, PropertyInfo filterColumn, string filterValue)
+            private static DynamicFilterBuilder FilterData(DynamicExpressions.FilterOperator filterOption, DynamicFilterBuilder predicate, PropertyInfo filterColumn, string filterValue)
             {
                 predicate = FilterDataStringDataType(filterOption, predicate, filterColumn, filterValue);
                 predicate = FilterDataCustomGreaterThan(filterOption, predicate, filterColumn, filterValue);
@@ -59,7 +59,7 @@ namespace Utilities.Common
                 return predicate;
             }
 
-            private static DynamicFilterBuilder<T> FilterDataStringDataType(FilterOperator filterOperator, DynamicFilterBuilder<T> predicate, PropertyInfo filterColumn, string filterValue)
+            private static DynamicFilterBuilder FilterDataStringDataType(FilterOperator filterOperator, DynamicFilterBuilder predicate, PropertyInfo filterColumn, string filterValue)
             {
                 if (filterOperator == FilterOperator.StartsWith)
                 {
@@ -89,7 +89,7 @@ namespace Utilities.Common
                 return predicate;
             }
 
-            private static DynamicFilterBuilder<T> FilterDataCustomGreaterThan(FilterOperator filterOption, DynamicFilterBuilder<T> predicate, PropertyInfo filterColumn, string filterValue)
+            private static DynamicFilterBuilder FilterDataCustomGreaterThan(FilterOperator filterOption, DynamicFilterBuilder predicate, PropertyInfo filterColumn, string filterValue)
             {
                 int outValue;
                 DateTime dateValue;
@@ -119,7 +119,7 @@ namespace Utilities.Common
                 return predicate;
             }
 
-            private static DynamicFilterBuilder<T> FilterDataCustomLessThan(FilterOperator filterOption, DynamicFilterBuilder<T> predicate, PropertyInfo filterColumn, string filterValue)
+            private static DynamicFilterBuilder FilterDataCustomLessThan(FilterOperator filterOption, DynamicFilterBuilder predicate, PropertyInfo filterColumn, string filterValue)
             {
                 int outValue;
                 DateTime dateValue;
@@ -148,7 +148,7 @@ namespace Utilities.Common
                 return predicate;
             }
 
-            private static DynamicFilterBuilder<T> FilterDataCustomEqualThan(FilterOperator filterOption, DynamicFilterBuilder<T> predicate, PropertyInfo filterColumn, string filterValue)
+            private static DynamicFilterBuilder FilterDataCustomEqualThan(FilterOperator filterOption, DynamicFilterBuilder predicate, PropertyInfo filterColumn, string filterValue)
             {
                 int outValue;
                 DateTime dateValue;
