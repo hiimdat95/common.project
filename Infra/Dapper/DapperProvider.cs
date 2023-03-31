@@ -65,7 +65,7 @@ namespace Infrastructure.Dapper
                     int index = 0;
                     foreach (string item in lstPara)
                     {
-                        if (item.Contains('@'))
+                        if (item.Contains('@i'))
                         {
                             if (item.EndsWith(","))
                             {
